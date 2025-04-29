@@ -39,3 +39,7 @@ with open(output_txt_path, "w", encoding="utf-8") as f:
         text = example["text"].strip()
         if text:
             f.write(text.replace("\n", " ") + "\n")
+
+# 3. Login Hugging Face and Wandb
+huggingface_hub.login("hf_token")
+wandb.login(key="wandb_token")
