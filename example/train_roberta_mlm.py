@@ -43,3 +43,34 @@ with open(output_txt_path, "w", encoding="utf-8") as f:
 # 3. Login Hugging Face and Wandb
 huggingface_hub.login("hf_token")
 wandb.login(key="wandb_token")
+
+# 4. Train tokenizer
+data_path = './data/wikipedia_vi'
+paths = [str(x) for x in Path(data_path).rglob("*.txt")]
+
+tokenizer = ByteLevelBPETokenizer()
+tokenizer.train(
+    files=paths,
+    vocab_size=152000,
+    min_frequency=4,
+    special_tokens=["<s>", "<pad>", "</s>", "<unk>", "<mask>"]
+)
+
+# Save tokenizer
+tokenizer_save_dir = Path("./roberta-mlm-tokenizer-v1")
+tokenizer_save_dir.mkdir(parents=True, exist_ok=True)
+tokenizer.save_model(str(tokenizer_save_dir))
+
+# Load tokenizer with processors
+tokenizer = ByteLevelBPETokenizer(
+    "./roberta-mlm-tokenizer-v1/vocab.json",
+    "./roberta-mlm-tokenizer-v1/merges.txt",
+)
+tokenizer._tokenizer.post_processor = BertProcessing(
+    ("</s>", tokenizer.token_to_id("</s>")),
+    ("<s>", tokenizer.token_to_id("<s>")),
+)
+tokenizer.enable_truncation(max_length=1024)
+
+# Load into Hugging Face format
+tokenizer = RobertaTokenizerFast.from_pretrained("./roberta-mlm-tokenizer-v1", max_len=512)
