@@ -74,3 +74,16 @@ tokenizer.enable_truncation(max_length=1024)
 
 # Load into Hugging Face format
 tokenizer = RobertaTokenizerFast.from_pretrained("./roberta-mlm-tokenizer-v1", max_len=512)
+
+# 5. Create Roberta model
+config = RobertaConfig(
+    vocab_size=152_000,
+    max_position_embeddings=514,
+    num_attention_heads=12,
+    num_hidden_layers=6,
+    type_vocab_size=1,
+)
+
+model = RobertaForMaskedLM(config=config)
+logger.info(f"Model parameters: {model.num_parameters()}")
+
