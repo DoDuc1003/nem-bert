@@ -87,3 +87,16 @@ config = RobertaConfig(
 model = RobertaForMaskedLM(config=config)
 logger.info(f"Model parameters: {model.num_parameters()}")
 
+# 6. Prepare dataset
+
+dataset = LineByLineTextDataset(
+    tokenizer=tokenizer,
+    file_path=str(output_txt_path),
+    block_size=512,
+)
+
+data_collator = DataCollatorForLanguageModeling(
+    tokenizer=tokenizer,
+    mlm=True,
+    mlm_probability=0.15
+)
