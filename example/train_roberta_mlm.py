@@ -135,3 +135,8 @@ trainer = Trainer(
     eval_dataset=dataset,
     tokenizer=tokenizer
 )
+
+# 8. Train and push model
+trainer.train()
+trainer.save_model("./roberta-mlm-model-v1-backup")
+trainer.push_to_hub()
