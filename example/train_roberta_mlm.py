@@ -100,3 +100,38 @@ data_collator = DataCollatorForLanguageModeling(
     mlm=True,
     mlm_probability=0.15
 )
+
+# 7. Setup Trainer
+training_args = TrainingArguments(
+    output_dir="./roberta-mlm-model-v1",
+    overwrite_output_dir=True,
+    evaluation_strategy="steps",
+    eval_steps=5000,
+    logging_strategy="steps",
+    logging_steps=500,
+    save_strategy="steps",
+    save_steps=10000,
+    save_total_limit=3,
+    num_train_epochs=5,
+    per_device_train_batch_size=32,
+    per_device_eval_batch_size=32,
+    gradient_accumulation_steps=1,
+    learning_rate=5e-4,
+    warmup_steps=1000,
+    weight_decay=0.01,
+    prediction_loss_only=True,
+    fp16=True,
+    push_to_hub=True,
+    report_to="wandb",
+    hub_model_id="Kudod/roberta-mlm-model-v1",
+    hub_strategy="checkpoint",
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    data_collator=data_collator,
+    train_dataset=dataset,
+    eval_dataset=dataset,
+    tokenizer=tokenizer
+)
