@@ -136,6 +136,19 @@ trainer = Trainer(
     tokenizer=tokenizer
 )
 
+### tránh bị kill
+import signal
+import sys
+
+def save_on_exit(signum, frame):
+    print(f"Nhận tín hiệu {signum}. Lưu mô hình trước khi thoát...")
+    trainer.save_model("./roberta-mlm-model-v2.3-backup-signal")
+    sys.exit(0)
+
+# Bắt các tín hiệu kill
+signal.signal(signal.SIGINT, save_on_exit)  # Ctrl+C
+signal.signal(signal.SIGTERM, save_on_exit)  # kill command
+
 # 8. Train and push model
 trainer.train()
 trainer.save_model("./roberta-mlm-model-v1-backup")
